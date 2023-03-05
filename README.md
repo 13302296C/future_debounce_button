@@ -1,6 +1,6 @@
 # Future Debounce Button (FDB)
 -----
-A single button for all your UI/UX asynchronous needs. Material3 ready.
+An easy-to-use button widget for asynchronous calls. Handle futures like a pro! Bring your UI/UX to the highest standards. Material3 ready.
 
 ![Future Debounce Button](./media/future-debounce-button.gif)
 -----
@@ -24,6 +24,21 @@ FutureDebounceButton<int>(
     onAbort: // TODO: (optional) what to do if the user canceled the request
 );
 ```
+
+
+## Button Types
+
+The button can be set to one of the following values: `elevated`, `filled`, `filledTonal`, `outlined` and `text` via the `buttonType` argument of FDB:
+
+| Value | Material Widget |
+| :--- |    :----:   |
+| FDBType.elevated | ElevatedButton |
+| FDBType.filled | FilledButton     |
+| FDBType.filledTonal | FilledButton.tonal |
+| FDBType.outlined | OutlinedButton |
+| FDBType.text | TextButton | 
+
+!![Future Debounce Button Types](./media/buttons.png)
 
 ## States
 
@@ -56,38 +71,24 @@ The following handlers are available:
 | Property | Type | Default value | Description |
 | :--- |    :----:   |    :----:   | :--- |
 | enabled | bool | true | if `enabled` is false - the button will be disabled |
-| buttonType | enum | FDBType.filled | see button types below |
-| actionCallChild | Widget? | null | Call to action (`ready`) state widget. Overrides `actionCallText` |
-| actionCallText | String?  | null | Displays provided text. Defaults to `Go` if left null |
-| actionCallButtonStyle | ButtonStyle?  | null | Button style for the `ready`/`disabled` state. Uses theme defaults if left null |
-| loadingChild | Widget? | null | Widget to show when the future is running (non-abortable), This overrides `loadingText` text |
-| loadingText | String? | null | Text to display when the future is running (non-abortable). Displays [CircularProgressIndicator] widget if left null |
-| loadingButtonStyle | ButtonStyle? | null | Button style for the `loading` state. Uses theme defaults if left null |
+| buttonType | enum | FDBType.filled | Allows yto choose from one of the five avaliable button widgets. See Button Types below |
+| actionCallChild | Widget? | null | Call to action (`ready`) state widget. This widget is displayed when the button is ready to be pressed. This overrides the `actionCallText` text |
+| actionCallText | String?  | null | Displays provided text. Defaults to `Go` if left `null` |
+| actionCallButtonStyle | ButtonStyle?  | null | Button style for the `ready`/`disabled` state. Uses theme defaults if left `null` |
+| loadingChild | Widget? | null | Widget to show when the future is running (non-abortable). This overrides `loadingText` text |
+| loadingText | String? | null | Text to display when the future is running (non-abortable). Displays [CircularProgressIndicator] widget if left `null` |
+| loadingButtonStyle | ButtonStyle? | null | Button style for the `loading` state. Uses theme defaults if left `null` |
 | abortChild | Widget? | null | Widget to show when the future is running (abortable), This overrides `abortText` text |
-| abortText | String? | null |  Text to display when the future is running (abortable). Displays [CircularProgressIndicator] widget with __Abort__ text if left null |
-| abortButtonStyle | ButtonStyle? | null | Button style for the `abort` state. Uses theme defaults if left null |
+| abortText | String? | null |  Text to display when the future is running (abortable). Displays [CircularProgressIndicator] widget with __Abort__ text if left `null` |
+| abortButtonStyle | ButtonStyle? | null | Button style for the `abort` state. Uses theme defaults if left `null` |
 | errorChild | Widget? | null |  Widget to show when the future has failed or timed out. This overrides `errorText` text |
-| errorText | String? | null | Text to display when the future has failed or timed out. Displays __Error__ text if left null |
-| errorButtonStyle | ButtonStyle? | null | Button style for the `error` state. Uses theme internal static style if left null |
-| errorStateDuration | Duration | 1s | The duration for which the error state is maintained. If `errorStateDuration` is set to `null` - the error state will never clear. If `errorStateDuration` is set to `Duration.zero` - the error state will clear instantly. |
+| errorText | String? | null | Text to display when the future has failed or timed out. Displays __Error__ text if left `null` |
+| errorButtonStyle | ButtonStyle? | null | Button style for the `error` state. Uses theme internal static style if left `null` |
+| errorStateDuration | Duration | 1s | The duration for which the error state is maintained. If `errorStateDuration` is set to `null` - the error state will never clear. If `errorStateDuration` is set to `Duration.zero` - the error state will clear instantly |
 | successChild | Widget? | null | Widget to show when the future has completed with a value. This overrides `successText` text |
 | successText | String? | null | Text to display when the future has completed with a value. Displays __Success!__ text if left `null` |
-| successButtonStyle | ButtonStyle?  | null | Button style for the `success` state. Uses theme internal static style if left null |
-| successStateDuration | Duration | 1s | The duration for which the error state is maintained. If `successStateDuration` is set to `null` - the success state will never clear. If `successStateDuration` is set to `Duration.zero` - the error state will clear instantly. |
-| debounceDuration | Duration | 250ms | A delay between the first press of the button and until the button starts accepting Abort hits (debounce). This is needed to prevent users from double-clicking the button. |
+| successButtonStyle | ButtonStyle?  | null | Button style for the `success` state. Uses theme internal static style if left `null` |
+| successStateDuration | Duration | 1s | The duration for which the error state is maintained. If `successStateDuration` is set to `null` - the success state will never clear. If `successStateDuration` is set to `Duration.zero` - the error state will clear instantly |
+| debounceDuration | Duration | 250ms | A delay between the first hit of the button and until the button starts accepting Abort hits (debounce). This is needed to prevent users from double-clicking the button. |
 | timeout | Duration? | null | Maximum duration of a future. If `timeout` is set and the time ran out - the FDB will produce [TimeoutException] and port it to `onError` handler if one is provided |
-
-
-
-### Button Types
-
-The button can be set to one of the following values: `elevated`, `filled`, `filledTonal`, `outlined` and `text` via the `buttonType` argument:
-
-| Value |Material Widget | Description |
-| :--- |    :----:   | ---: |
-| FDBType.elevated | ElevatedButton |- |
-| FDBType.filled | FilledButton | - |
-| FDBType.filledTonal | FilledButton.tonal | - |
-| FDBType.outlined | OutlinedButton | - |
-| FDBType.text | TextButton | - |
 

@@ -69,7 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: FutureDebounceButton(
-                enabled: true,
+                enabled: false,
                 buttonType: FDBType.values[i],
                 onPressed: () async => _future(y),
                 onSuccess: _incrementCounter,
