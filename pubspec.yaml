@@ -1,8 +1,7 @@
 name: future_debounce_button
 description: >-
     Future Debounce Button (FDB) provides complete boilerplate for the lifecycle 
-    of provided future. It manages its state based on the future's state and
-    other parameters. It also provides a way to debounce the button's tap events.
+    of provided future and manages its state based on that future and other parameters.
 version: 0.1.0
 
 repository: https://github.com/13302296C/future_debounce_button

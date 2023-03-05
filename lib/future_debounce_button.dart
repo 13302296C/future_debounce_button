@@ -64,7 +64,8 @@ class FutureDebounceButton<T> extends StatefulWidget {
   /// What to do if the user decides to abort the `onPressed` future.
   final Function()? onAbort;
 
-  /// The type of button to be displayed. Defaults to [FDBType.elevated]
+  /// The type of button to be displayed. Defaults to `FDBType.elevated`
+  /// <img src="https://github.com/13302296C/future_debounce_button/raw/master/media/buttons.png" alt="Button types" width="500"/>
   final FDBType buttonType;
 
   /// When isAbortable is `true`, the button will activate abort action
