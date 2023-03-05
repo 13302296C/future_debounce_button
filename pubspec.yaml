@@ -2,7 +2,7 @@ name: future_debounce_button
 description: >-
     A button that debounces the `onPressed` function
     to prevent consequent calls of `onPressed` method while the future is running.
-version: 0.0.1
+version: 0.1.0
 homepage:
 
 environment:
