@@ -14,7 +14,7 @@ platforms:
   ios:
   web:
   linux:
-  Windows:
+  windows:
   macos:
 
 
