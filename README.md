@@ -25,6 +25,25 @@ FutureDebounceButton<int>(
 );
 ```
 
+The following example displays a [OutlinedButton] 'Submit' button, which triggers a future. If the future fails - the button will enter the `error` state for 2 seconds. If the future completes successfully - the button will enter `success` state forever, preventing user from calling the future again.
+
+```dart
+/// Submit request to server
+Future<bool> submit() async {
+    // ...
+}
+
+   // ...
+
+/// A button that says 'Submit'
+FutureDebounceButton<bool>(
+    buttonType: FDBType.outlined, // Shows OutlinedButton widget
+    onPressed: submit,
+    actionCallText: 'Submit',
+    errorStateDuration: Duration(seconds:2), // show 'Error' for 2 seconds
+    successStateDuration: null // will lock in 'Success!' forever
+);
+```
 
 ## Button Types
 
@@ -98,4 +117,3 @@ The following handlers are available:
 |__Debounce and Timeout__||||
 | debounceDuration | Duration | 250ms | A delay between the first hit of the button and until the button starts accepting Abort hits (debounce). This is needed to prevent users from double-clicking the button. |
 | timeout | Duration? | null | Maximum duration of a future. If `timeout` is set and the time ran out - the FDB will produce [TimeoutException] and port it to `onError` handler if one is provided |
-

@@ -120,7 +120,7 @@ class FutureDebounceButton<T> extends StatefulWidget {
   /// The duration of the error state. Defaults to 1 second.
   /// If the duration is set to `null`, the error state will be displayed
   /// forever. If the duration is set to `Duration.zero`, the error state
-  /// will not be displayed at all.
+  /// will be displayed for one frame.
   final Duration? errorStateDuration;
 
   /// The widget to display when the `onPressed` future has failed.
@@ -135,13 +135,14 @@ class FutureDebounceButton<T> extends StatefulWidget {
   /// The duration of the success state. Defaults to 1 second.
   /// If the duration is set to `null`, the success state will be displayed
   /// forever. If the duration is set to `Duration.zero`, the success state
-  /// will not be displayed at all.
+  /// will be displayed for one frame.
   final Duration? successStateDuration;
 
   /// The duration of the debounce before the button could be pressed again.
   /// This helps prevent accidental double-taps that cancel the request
   /// right after it fired. This is only useful if the `onAbort`
-  /// is employed. Defaults to 100 milliseconds.
+  /// is employed. You can also use this to defer the user from being able
+  /// to abort the call for `x` amount of time. Defaults to 250 milliseconds.
   final Duration debounceDuration;
 
   /// Future timeout. If the `timeout` is provided, the `onPressed` future
