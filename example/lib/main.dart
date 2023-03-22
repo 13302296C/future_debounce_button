@@ -36,7 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
   /// The future that throws an exception
   Future<int> _futureThatThrows() async {
     await Future<void>.delayed(const Duration(seconds: 2));
-    throw Exception('This future hase thrown an exception');
+    throw Exception('This future has thrown an exception');
   }
 
   /// The future that never completes, so you will have to cancel it
@@ -69,13 +69,14 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: FutureDebounceButton(
-                enabled: false,
                 buttonType: FDBType.values[i],
                 onPressed: () async => _future(y),
                 onSuccess: _incrementCounter,
                 onError: _onError,
+                onStateChange: (p0) => log("State changed to $p0"),
                 // errorStateDuration: null,
                 // successStateDuration: null,
+                // abortStateDuration: null,
                 onAbort: y == 1 ? null : _onAbort,
               ),
             )));

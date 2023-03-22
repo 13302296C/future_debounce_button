@@ -84,6 +84,7 @@ The following handlers are available:
 | onSuccess | optional | called when the `onPressed` future has completed with a value. |
 | onError | optional | The future has produced an error. The `error` and `stackTrace` objects are passed to the method. |
 | onAbort | optional | __If `onAbort` handler is provided, the button becomes "abortable"__ (the future could be abandoned and the possible result is dropped instead of being fed to `onSuccess` handler). If `onAbort` is not provided - the button will lock in the "loading" state until the future completes with success, error, or times out (see `timeout` property). |
+| onStateChange | optional | Notifies its listeners about the button's state changes. The possible values as per `FDBState` enum |
 
 ## Properties
 
@@ -102,8 +103,11 @@ The following handlers are available:
 | loadingButtonStyle | ButtonStyle? | null | Button style for the `loading` state. Uses theme defaults if left `null` |
 |__Abort state__||||
 | abortChild | Widget? | null | Widget to show when the future is running (abortable), This overrides `abortText` text |
+| abortPressedChild | Widget? | null | Widget to show when the user presses abort button, This overrides `abortPressedText` text |
 | abortText | String? | null |  Text to display when the future is running (abortable). Displays [CircularProgressIndicator] widget with __Abort__ text if left `null` |
+| abortPressedText | String? | null |  Text to display when the user presses abort button. Displays text widget with __Cancelled__ text if left `null` |
 | abortButtonStyle | ButtonStyle? | null | Button style for the `abort` state. Uses theme defaults if left `null` |
+| abortStateDuration | Duration | 1s | The duration for which the abort state is maintained. If `abortStateDuration` is set to `null` - the abort state will never clear. If `abortStateDuration` is set to `Duration.zero` - the abort state will clear instantly |
 |__Error state__||||
 | errorChild | Widget? | null |  Widget to show when the future has failed or timed out. This overrides `errorText` text |
 | errorText | String? | null | Text to display when the future has failed or timed out. Displays __Error__ text if left `null` |

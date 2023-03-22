@@ -65,12 +65,24 @@ class FutureDebounceButton<T> extends StatefulWidget {
   final Function()? onAbort;
 
   /// The type of button to be displayed. Defaults to `FDBType.elevated`
+  ///
   /// <img src="https://github.com/13302296C/future_debounce_button/raw/master/media/buttons.png" alt="Button types" width="500"/>
   final FDBType buttonType;
 
   /// When isAbortable is `true`, the button will activate abort action
   /// when pressed again before the `onPressed` future is completed.
   bool get isAbortable => onAbort != null;
+
+  /// Triggers every time the button changes state.
+  ///
+  /// The possible emitted values are:
+  /// - `FDBState.disabled` - the button is disabled
+  /// - `FDBState.ready` - the button is ready to be pressed
+  /// - `FDBState.running` - the button is pressed and the `onPressed` future is running
+  /// - `FDBState.abort` - the button is pressed and the `onPressed` future is running
+  /// - `FDBState.success` - the `onPressed` future has completed with a value
+  /// - `FDBState.error` - the `onPressed` future has completed with an error
+  final void Function(FDBState)? onStateChange;
 
   /// The widget to be displayed before the `onPressed` future has started.
   final Widget? actionCallChild;
@@ -99,14 +111,25 @@ class FutureDebounceButton<T> extends StatefulWidget {
   /// and user can abort the call.
   final Widget? abortChild;
 
+  /// The widget to be displayed when the abort action is triggered.
+  final Widget? abortPressedChild;
+
   /// Button text displayed while the `onPressed` future is running and user
   /// can abort the call. Defaults to 'Abort'. This label is only used if
   /// `abortChild` is not provided.
   final String? abortText;
 
+  /// Button text displayed when the abort action is triggered.
+  /// Defaults to 'Cancelled'. This label is only used if
+  /// `abortPressedChild` is not provided.
+  final String? abortPressedText;
+
   /// The style to be used for the button while the `onPressed` future is running
   /// and user can abort the call.
   final ButtonStyle? abortButtonStyle;
+
+  /// The duration of the abort state. Defaults to 1 second.
+  final Duration? abortStateDuration;
 
   /// The widget to display when the `onPressed` future has failed.
   final Widget? errorChild;
@@ -158,6 +181,7 @@ class FutureDebounceButton<T> extends StatefulWidget {
     this.onSuccess,
     this.onError,
     this.onAbort,
+    this.onStateChange,
     this.buttonType = FDBType.filled,
     this.actionCallText = 'Go',
     this.actionCallChild,
@@ -166,8 +190,11 @@ class FutureDebounceButton<T> extends StatefulWidget {
     this.loadingChild,
     this.loadingButtonStyle,
     this.abortText = 'Abort',
+    this.abortPressedText = 'Cancelled',
     this.abortChild,
+    this.abortPressedChild,
     this.abortButtonStyle,
+    this.abortStateDuration = const Duration(seconds: 1),
     this.errorText = 'Error',
     this.errorChild,
     this.errorButtonStyle,
@@ -251,7 +278,15 @@ class FutureDebounceButton<T> extends StatefulWidget {
 
 class _FutureDebounceButtonState<T> extends State<FutureDebounceButton<T>>
     with TickerProviderStateMixin {
-  /// Button state
+  @protected
+  final StreamController<FDBState> state = StreamController<FDBState>();
+
+  late final Stream<FDBState> _stateStream;
+
+  late final StreamSink<FDBState> _stateSink;
+
+  set _newState(FDBState value) => _stateSink.add(value);
+
   FDBState _state = FDBState.disabled;
 
   /// The flag indicating that the button can be pressed to cancel the future.
@@ -272,8 +307,16 @@ class _FutureDebounceButtonState<T> extends State<FutureDebounceButton<T>>
   @override
   void initState() {
     super.initState();
+    _stateStream = state.stream.asBroadcastStream();
+    _stateSink = state.sink;
+    // listen to the state stream and call the onStateChange callback
+    _stateStream.listen((FDBState state) {
+      if (widget.onStateChange != null) {
+        widget.onStateChange!(state);
+      }
+    });
     if (widget.enabled) {
-      _state = FDBState.ready;
+      _newState = FDBState.ready;
     }
     animationController =
         AnimationController(duration: const Duration(seconds: 2), vsync: this);
@@ -282,65 +325,84 @@ class _FutureDebounceButtonState<T> extends State<FutureDebounceButton<T>>
 
   @override
   Widget build(BuildContext context) {
-    switch (_state) {
-      case FDBState.disabled:
-      case FDBState.ready:
-        return _buildActionButton();
-      case FDBState.running:
-        if (widget.isAbortable && _abortCanBePressed) {
-          // Display the abort button.
-          return _buildAbortButton();
-        } else if (!_abortCanBePressed) {
-          //disabled action button
-          return _buildActionButton();
-        } else {
-          // Display the loading button.
-          return _buildLoadingButton();
-        }
-      case FDBState.success:
-        // if the success state duration is not zero -
-        // Schedule a reset of the button state after the
-        // success state `duration` delay.
-        if (widget.successStateDuration == null) {
-          // show forever
-        } else if (widget.successStateDuration! != Duration.zero) {
-          // show for a duration
-          Future.delayed(widget.successStateDuration!).then((value) {
-            _reset();
-            if (mounted) setState(() {});
-          });
-        } else {
-          // do not show
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            _reset();
-            if (mounted) setState(() {});
-          });
-        }
-        return _buildSuccessButton();
-      case FDBState.error:
-        // if the error state duration is not zero -
-        // Schedule a reset of the button state after the
-        // error state `duration` delay.
-        if (widget.errorStateDuration == null) {
-          // show forever
-        } else if (widget.errorStateDuration != Duration.zero) {
-          // show for a duration
-          Future.delayed(widget.errorStateDuration!).then((value) {
-            _reset();
-            if (mounted) setState(() {});
-          });
-        } else {
-          // do not show
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            _reset();
-            if (mounted) setState(() {});
-          });
-        }
-        // Display the error button.
-        return _buildErrorButton();
-      case FDBState.abort:
-        return _buildAbortButton();
-    }
+    return StreamBuilder(
+        stream: _stateStream,
+        builder: (context, AsyncSnapshot<FDBState> state) {
+          _state = FDBState.disabled;
+          if (state.hasData && state.data != null) {
+            _state = state.data!;
+          } else {
+            _state = FDBState.disabled;
+          }
+          switch (_state) {
+            case FDBState.disabled:
+            case FDBState.ready:
+              return _buildActionButton();
+            case FDBState.running:
+              if (widget.isAbortable && _abortCanBePressed) {
+                // Display the abort button.
+                return _buildAbortButton();
+              } else if (!_abortCanBePressed) {
+                //disabled action button
+                return _buildActionButton();
+              } else {
+                // Display the loading button.
+                return _buildLoadingButton();
+              }
+            case FDBState.success:
+              // if the success state duration is not zero -
+              // Schedule a reset of the button state after the
+              // success state `duration` delay.
+              if (widget.successStateDuration == null) {
+                // show forever
+              } else if (widget.successStateDuration! != Duration.zero) {
+                // show for a duration
+                Future.delayed(widget.successStateDuration!).then((_) {
+                  _reset();
+                });
+              } else {
+                // do not show
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _reset();
+                });
+              }
+              return _buildSuccessButton();
+            case FDBState.error:
+              // if the error state duration is not zero -
+              // Schedule a reset of the button state after the
+              // error state `duration` delay.
+              if (widget.errorStateDuration == null) {
+                // show forever
+              } else if (widget.errorStateDuration != Duration.zero) {
+                // show for a duration
+                Future.delayed(widget.errorStateDuration!).then((value) {
+                  _reset();
+                });
+              } else {
+                // do not show
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _reset();
+                });
+              }
+              // Display the error button.
+              return _buildErrorButton();
+            case FDBState.abort:
+              if (widget.abortStateDuration == null) {
+                // show forever
+              } else if (widget.abortStateDuration != Duration.zero) {
+                // show for a duration
+                Future.delayed(widget.abortStateDuration!).then((value) {
+                  _reset();
+                });
+              } else {
+                // do not show
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _reset();
+                });
+              }
+              return _buildAbortPressedButton();
+          }
+        });
   }
 
   /// Builds the action button.
@@ -358,25 +420,21 @@ class _FutureDebounceButtonState<T> extends State<FutureDebounceButton<T>>
               } else {
                 _abortCanBePressed = true;
               }
-              _state = FDBState.running;
-              if (mounted) setState(() {});
+              _newState = FDBState.running;
               future = widget.onPressed().then((T value) {
                 if (_state == FDBState.running) {
-                  _state = FDBState.success;
-                  if (mounted) setState(() {});
+                  _newState = FDBState.success;
                   widget.onSuccess?.call(value);
                 }
               }).onError((error, stackTrace) {
-                _state = FDBState.error;
-                if (mounted) setState(() {});
+                _newState = FDBState.error;
                 widget.onError?.call(error, stackTrace);
               });
 
               if (widget.timeout != null) {
                 future?.timeout(widget.timeout!, onTimeout: () {
-                  setState(() {
-                    _state = FDBState.error;
-                  });
+                  _newState = FDBState.error;
+
                   widget.onError?.call(
                       TimeoutException('Request timed out', widget.timeout),
                       null);
@@ -395,14 +453,14 @@ class _FutureDebounceButtonState<T> extends State<FutureDebounceButton<T>>
 
   /// Resets the button state.
   void _reset() {
-    if (widget.enabled) {
-      _state = FDBState.ready;
-    } else {
-      _state = FDBState.disabled;
-    }
     future?.ignore();
     future = null;
     _abortCanBePressed = false;
+    if (widget.enabled) {
+      _newState = FDBState.ready;
+    } else {
+      _newState = FDBState.disabled;
+    }
   }
 
   /// Builds a [CircularProgressIndicator] with [valueColor] animation.
@@ -418,7 +476,7 @@ class _FutureDebounceButtonState<T> extends State<FutureDebounceButton<T>>
   /// Builds the loading button.
   Widget _buildLoadingButton() {
     return _buildButton(
-      onPressed: null,
+      onPressed: () {},
       child: widget.loadingChild ??
           (widget.loadingText != null ? Text(widget.loadingText!) : _cpi()),
     );
@@ -429,8 +487,7 @@ class _FutureDebounceButtonState<T> extends State<FutureDebounceButton<T>>
     return _buildButton(
       onPressed: _abortCanBePressed
           ? () {
-              _reset();
-              if (mounted) setState(() {});
+              _newState = FDBState.abort;
               widget.onAbort?.call();
             }
           : null,
@@ -443,6 +500,14 @@ class _FutureDebounceButtonState<T> extends State<FutureDebounceButton<T>>
               Text(widget.abortText!),
             ],
           ),
+    );
+  }
+
+  /// Builds the abort button.
+  Widget _buildAbortPressedButton() {
+    return _buildButton(
+      onPressed: () {},
+      child: widget.abortPressedChild ?? Text(widget.abortPressedText!),
     );
   }
 
