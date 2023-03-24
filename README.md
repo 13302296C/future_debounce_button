@@ -24,7 +24,7 @@ FutureDebounceButton<int>(
 );
 ```
 
-The following example displays a [OutlinedButton] 'Submit' button, which triggers a future. If the future fails - the button will enter the `error` state for 2 seconds. If the future completes successfully - the button will enter `success` state forever, preventing user from calling the future again.
+The following example displays a "Submit" [OutlinedButton] widget, which triggers a future. If the future fails - the button will enter the `error` state for 2 seconds. If the future completes successfully - the button will enter `success` state forever, preventing user from calling the future again.
 
 ```dart
 /// Submit request to server
@@ -66,7 +66,7 @@ The possible states are:
 * __disabled__ - button is either completely disabled, or disabled for the duration of `debounceDuration` value after the button was pressed (see Properties > debounceDuration).
 * __ready__ - the button is in its normal "call to action" state. In this state it displays either `actionCallChild` widget, `actionCallText` text, or text __'Go'__ if none of those values are provided.
 * __loading__ - the button has been pressed and the future is executing. _The `onAbort` handler is not provided_ to the button. The button in this state displays either `loadingChid` widget, `loadingText` text, or the default [CircularProgressIndicator] widget if none of the former is provided. Clicking on the button in this state does nothing. The button awaits for the future to complete or time out.
-* __abort__ - the abort button has been pressed while the future was executing. The button displays either `avortPressedChild` widget, `abortPressedText` text, or __Cancelled__ text if none of the former are provided. See the `abortStateDuration` property for more options on this state. When the user presses the abort button - the future is abandoned.
+* __abort__ - the abort button has been pressed while the future was executing. The button displays either `abortPressedChild` widget, `abortPressedText` text, or __Cancelled__ text if none of the former are provided. See the `abortStateDuration` property for more options on this state. When the user presses the abort button - the future is abandoned.
 * __success__ - the future has completed with a value. The value is passed to the `onSuccess` handler if one is provided. The button displays either `successChild` widget, `successText` text, or __Success!__ text if none of the former are provided. See the `successStateDuration` property for more options on this state
 * __error__ - the future has completed with an error or timed out. The error and the stack trace are passed to the `onError` handler if one is provided. The button displays either `errorChild` widget, `errorText` text, or __Error__ text if none of the former are provided. See the `errorStateDuration` property for more options on this state
 
