@@ -1,19 +1,18 @@
 # Future Debounce Button (FDB)
 -----
-An easy-to-use, all-in-one  button widget for asynchronous calls. Handle futures like a pro: 
-keep your code clean and light, bring your UI/UX to the highest standards. Material3 ready.
+Button for asynchronous calls. Keeps your code clean, improves UI/UX through visual indication.
 
 ![Future Debounce Button](./media/future-debounce-button.gif)
 -----
 ## Features
 
-A button widget with a very simple implementation that provides complete boilerplate for handling and debouncing of asynchronous requests (API calls etc.). The FDB button handles the future (debounce, abort, block) and updates own state based on the state of that future and other provided parameters.
+A button widget that provides complete boilerplate for handling and debouncing of asynchronous requests (API calls etc.). The FDB button handles the future (debounce, abort, block) and indicates its state based on the state of that future and other provided parameters.
 
 
 -----
 ## Getting started
 
-This button is MVC/MVVM-friendly and is easy to use. The only required parameter is the `onPressed` future. Everything else is optional.
+The only required parameter for this button is the `onPressed` future. Everything else is optional.
 
 ```dart
 // A button that handles a future of type `Future<int>`
@@ -67,7 +66,7 @@ The possible states are:
 * __disabled__ - button is either completely disabled, or disabled for the duration of `debounceDuration` value after the button was pressed (see Properties > debounceDuration).
 * __ready__ - the button is in its normal "call to action" state. In this state it displays either `actionCallChild` widget, `actionCallText` text, or text __'Go'__ if none of those values are provided.
 * __loading__ - the button has been pressed and the future is executing. _The `onAbort` handler is not provided_ to the button. The button in this state displays either `loadingChid` widget, `loadingText` text, or the default [CircularProgressIndicator] widget if none of the former is provided. Clicking on the button in this state does nothing. The button awaits for the future to complete or time out.
-* __abort__ - the button has been pressed and the future is executing. _The `onAbort` handler is provided_ to the button. The button in this state displays either `abortChild` widget, `abortTextText` or the default [CircularProgressIndicator] widget with __'Abort'__ text, indicating that the future could be aborted. When the user presses the Abort button - the future is abandoned.
+* __abort__ - the abort button has been pressed while the future was executing. The button displays either `avortPressedChild` widget, `abortPressedText` text, or __Cancelled__ text if none of the former are provided. See the `abortStateDuration` property for more options on this state. When the user presses the abort button - the future is abandoned.
 * __success__ - the future has completed with a value. The value is passed to the `onSuccess` handler if one is provided. The button displays either `successChild` widget, `successText` text, or __Success!__ text if none of the former are provided. See the `successStateDuration` property for more options on this state
 * __error__ - the future has completed with an error or timed out. The error and the stack trace are passed to the `onError` handler if one is provided. The button displays either `errorChild` widget, `errorText` text, or __Error__ text if none of the former are provided. See the `errorStateDuration` property for more options on this state
 

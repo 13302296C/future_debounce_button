@@ -1,8 +1,8 @@
 name: future_debounce_button
 description: >-
-    Future Debounce Button (FDB) provides complete boilerplate for the lifecycle 
-    of provided future and manages its state based on that future and other parameters.
-version: 0.2.0
+    Button for asynchronous calls. Keeps your code clean, improves UI/UX through visual indication.
+
+version: 0.3.0
 
 repository: https://github.com/13302296C/future_debounce_button
 homepage: https://github.com/13302296C/future_debounce_button
